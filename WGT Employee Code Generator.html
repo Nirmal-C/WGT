@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #result, #barcodeResult {
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        #downloadButton{
+            
+
+        }
+
+        #barcodeContainer{
+            margin-top: 20px;
+            display: none;
+        }
+
+        #result{
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js" defer></script>
+    <script>
+        function validateFields() {
+            var role = document.getElementById("role").value;
+            var department = document.getElementById("department").value;
+            var zone = document.getElementById("zone").value;
+            var region = document.getElementById("region").value;
+            var branch = document.getElementById("branch").value;
+            var team = document.getElementById("team").value;
+            var uniqueIdentifier = document.getElementById("uniqueIdentifier").value;
+
+            if (role === "" || department === "" || zone === "" || region === "" || branch === "" || team === "" || uniqueIdentifier === "") {
+                alert("Please enter valid details in all fields.");
+                return false;
+            }
+
+            return true;
+        }
+
+        function generateEmployeeCode() {
+            if (validateFields()) {
+                var role = document.getElementById("role").value;
+                var department = document.getElementById("department").value;
+                var zone = document.getElementById("zone").value;
+                var region = document.getElementById("region").value;
+                var branch = document.getElementById("branch").value;
+                var team = document.getElementById("team").value;
+                var uniqueIdentifier = document.getElementById("uniqueIdentifier").value;
+
+                var employeeCode = role + department + zone + region + branch + team + uniqueIdentifier;
+                document.getElementById("result").style.display = "block";
+                document.getElementById("result").innerHTML = "Generated Employee Code: " + employeeCode;
+                
+
+                var barcodeNumber = generateBarcodeNumber(role, department, zone, region, branch, team, uniqueIdentifier);
+                document.getElementById("barcodeResult").innerHTML = "Generated Barcode ";
+
+                displayBarcode("barcode", barcodeNumber);
+                document.getElementById("barcodeContainer").style.display = "block";
+        
+            }
+        }
+
+        function generateBarcodeNumber(role, department, zone, region, branch, team, uniqueIdentifier) {
+            role = ("00" + role).slice(-3);
+            
+            var barcodeNumber = role + '-' + department + '-' + zone + '-' + region + '-' + branch + '-' + team + '-' + uniqueIdentifier;
+            return barcodeNumber;
+        }
+
+        function downloadBarcode() {
+    var svg = document.getElementById("barcode");
+    var canvas = document.createElement("canvas");
+    var context = canvas.getContext("2d");
+
+
+    canvas.width = svg.clientWidth;
+    canvas.height = svg.clientHeight;
+
+   
+    var svgData = new XMLSerializer().serializeToString(svg);
+    var img = new Image();
+    img.src = "data:image/svg+xml;base64," + btoa(svgData);
+
+    img.onload = function () {
+        context.drawImage(img, 0, 0);
+
+        var employeeCode = document.getElementById("result").innerText.replace("Generated Employee Code: ", "");
+   
+        var link = document.createElement("a");
+        link.href = canvas.toDataURL("image/jpeg");
+        link.download = employeeCode + ".jpg";
+        link.click();
+    };
+}
+
+
+        function displayBarcode(elementId, data) {
+            JsBarcode("#" + elementId, data, {
+                format: "CODE128",
+                width: 2,
+                height: 50,
+                displayValue: true
+            });
+        }
+    </script>
+</head>
+<body>
+    <h2>WORLD GREEN TRADING (PVT) LTD - EMPLOYEE CODE GENERATOR</h2>
+    
+    <label for="role">Role:</label>
+    <select id="role">
+        <option value="1">Chairman</option>
+        <option value="2">Directors</option>
+        <option value="3">Working Director</option>
+        <option value="10">Zonal Manager</option>
+        <option value="20">Regional Manager</option>
+        <option value="30">Branch Manager</option>
+        <option value="50">Team Manager</option>
+        <option value="100">Technical Officer</option>
+        <option value="300">BPO</option>
+    </select>
+
+    <label for="department">Department:</label>
+    <select id="department">
+        <option value="0">Not Applicable</option>
+        <option value="1">Admin</option>
+        <option value="2">Marketing</option>
+        <option value="3">Sales</option>
+        <option value="4">IT</option>
+        <option value="5">Research</option>
+    </select>
+
+    <label for="zone">Zone:</label>
+    <select id="zone">
+        <option value="0">Not Applicable</option>
+        <option value="1">Zone 1</option>
+        <option value="2">Zone 2</option>
+        <option value="3">Zone 3</option>
+    </select>
+
+    <label for="region">Region:</label>
+    <select id="region">
+        <option value="0">Not Applicable</option>
+        <option value="1">Central</option>
+        <option value="2">Eastern</option>
+        <option value="3">North Central</option>
+        <option value="4">Northern</option>
+        <option value="5">North Western</option>
+        <option value="6">Sabaragamuwa</option>
+        <option value="7">Southern</option>
+        <option value="8">Uva</option>
+        <option value="9">Western</option>
+    </select>
+
+     <label for="branch">Branch:</label>
+    <select id="branch">
+        <option value="00">Not Applicable</option>
+        <option value="01">Head Office</option>
+        <option value="02">Branch 1</option>
+        <option value="03">Branch 2</option>
+        <option value="04">Branch 3</option>
+        <option value="5">Branch 4</option>
+        <option value="6">Branch 5</option>
+        <option value="7">Branch 6</option>
+        <option value="8">Branch 7</option>
+        <option value="9">Branch 8</option>
+        <option value="10">Branch 9</option>
+        <option value="11">Branch 10</option>
+        <option value="12">Branch 11</option>
+        <option value="13">Branch 12</option>
+        <option value="14">Branch 13</option>
+        <option value="15">Branch 14</option>
+        <option value="16">Branch 15</option>
+        <option value="17">Branch 16</option>
+        <option value="18">Branch 17</option>
+        <option value="19">Branch 18</option>
+        <option value="20">Branch 19</option>
+        <option value="21">Branch 20</option>
+    </select>
+
+    <label for="team">Team:</label>
+    <select id="team">
+        <option value="0">Not Applicable</option>
+        <option value="2">Team 1</option>
+        <option value="3">Team 2</option>
+        <option value="4">Team 3</option>
+        <option value="5">Team 4</option>
+        <option value="1">Team 5</option>
+    </select>
+
+    <label for="uniqueIdentifier">Unique Identifier:</label>
+    <input type="text" id="uniqueIdentifier" pattern="\d*" title="Please enter a number" placeholder="Below 100">
+
+    <button onclick="generateEmployeeCode()">Generate Employee Code</button>
+
+    <div id="result"></div>
+
+    <div id="barcodeContainer">
+        <div id="barcodeResult"></div>
+        <svg id="barcode"></svg><br>
+        <button id="downloadButton" onclick="downloadBarcode()">Download Barcode</button>
+    </div>
+     <canvas id="barcodeCanvas"></canvas>
+ 
+   
+    
+
+</body>
+</html>
+
+
+
+
